@@ -1,0 +1,135 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String           @id @default(uuid())
+  email         String           @unique
+  password      String?
+  name          String?
+  googleToken   String?          // JSON credentials
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  resumes       Resume[]
+  workflows     Workflow[]
+  emails        EmailHistory[]
+  meetings      MeetingHistory[]
+}
+
+model Resume {
+  id           String          @id @default(uuid())
+  filename     String
+  fileSize     Int
+  parsedText   String
+  hash         String          @unique // File duplicate detection
+  status       String          @default("PENDING") // PENDING, INDEXED, FAILED
+  
+  // Metadata fields
+  name         String?
+  email        String?
+  phone        String?
+  skills       String?         // JSON list of skills
+  experience   String?         // JSON list of experience
+  education    String?         // JSON list of education
+  projects     String?         // JSON list of projects
+
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime        @default(now())
+  
+  // Vector RAG chunk mappings
+  chunks       DocumentChunk[]
+  candidates   Candidate[]
+}
+
+model Document {
+  id          String          @id @default(uuid())
+  filename    String
+  hash        String          @unique
+  content     String
+  createdAt   DateTime        @default(now())
+  chunks      DocumentChunk[]
+}
+
+model DocumentChunk {
+  id         String   @id @default(uuid())
+  resumeId   String?
+  resume     Resume?  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  docId      String?
+  document   Document? @relation(fields: [docId], references: [id], onDelete: Cascade)
+  
+  chunkText  String
+  embedding  Unsupported("vector(1024)")? // pgvector embedding, voyage uses 1024 size
+  metadata   String   // JSON string metadata (Candidate Name, Filename, Upload Time, etc.)
+  createdAt  DateTime @default(now())
+}
+
+model Workflow {
+  id          String        @id @default(uuid())
+  prompt      String
+  status      String        @default("PENDING") // PENDING, PLANNING, RUNNING, COMPLETED, FAILED
+  logs        String        @default("[]")      // JSON logs list
+  planJson    String?       // Strategic plan structure
+  reportPdf   String?       // HTML base64 printable PDF
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  candidates  Candidate[]
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  workflowId  String
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  agentName   String
+  status      String   @default("PENDING") // PENDING, RUNNING, COMPLETED, FAILED
+  output      String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Candidate {
+  id           String   @id @default(uuid())
+  workflowId   String
+  workflow     Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  resumeId     String?
+  resume       Resume?  @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  name         String
+  email        String?
+  phone        String?
+  matchScore   Int      @default(0)
+  status       String   @default("CONSIDERED") // CONSIDERED, SHORTLISTED, REJECTED
+  reasoning    String?
+  createdAt    DateTime @default(now())
+}
+
+model EmailHistory {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  candidateName  String
+  candidateEmail String
+  subject        String
+  body           String
+  status         String   @default("PENDING_APPROVAL") // PENDING_APPROVAL, SENT, FAILED
+  createdAt      DateTime @default(now())
+}
+
+model MeetingHistory {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  candidateName  String
+  candidateEmail String
+  subject        String
+  body           String
+  date           String
+  meetingLink    String?
+  status         String   @default("PENDING_APPROVAL") // PENDING_APPROVAL, SCHEDULED, FAILED
+  createdAt      DateTime @default(now())
+}
