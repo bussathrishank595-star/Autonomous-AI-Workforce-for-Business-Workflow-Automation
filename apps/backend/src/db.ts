@@ -2,24 +2,27 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
-const connectionString = process.env.DATABASE_URL;
-
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-let prismaInstance: PrismaClient;
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not set");
+  }
 
-if (connectionString) {
-  const pool = new Pool({ 
+  // Use a single-connection pool; actual connection multiplexing is handled by
+  // Supabase's Transaction Pooler (pgbouncer on port 6543).
+  const pool = new Pool({
     connectionString,
-    max: 1, // Restrict each serverless worker container to at most 1 connection
-    idleTimeoutMillis: 2000, // Speed up release of idle connection sockets
+    max: 1,
+    idleTimeoutMillis: 1000,
+    connectionTimeoutMillis: 5000,
   });
+
   const adapter = new PrismaPg(pool);
-  prismaInstance = new PrismaClient({ adapter, log: ["query"] });
-} else {
-  prismaInstance = new PrismaClient({ log: ["query"] });
+  return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma || prismaInstance;
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
