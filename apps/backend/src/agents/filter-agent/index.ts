@@ -88,20 +88,19 @@ Schema:
             });
           }
 
-          // Resolve email in priority order: LLM extracted → resume.email → resume parsedText scan
-          let resolvedEmail = (item.email || "").trim();
-          if (!resolvedEmail && matchedResume?.email) {
-            resolvedEmail = matchedResume.email.trim();
-          }
+          // Resolve email and name prioritizing Resume over LLM
+          let resolvedEmail = matchedResume?.email?.trim() || (item.email || "").trim();
           if (!resolvedEmail && matchedResume?.parsedText) {
             const emailMatch = matchedResume.parsedText.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
             if (emailMatch) resolvedEmail = emailMatch[1].trim();
           }
 
+          const resolvedName = matchedResume?.name || item.name;
+
           await prisma.candidate.create({
             data: {
               workflowId: input.workflowId as string,
-              name: item.name,
+              name: resolvedName,
               email: resolvedEmail,
               phone: matchedResume?.phone || "",
               matchScore: 0, // Ranking agent will update this

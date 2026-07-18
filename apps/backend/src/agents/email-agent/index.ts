@@ -47,11 +47,13 @@ export class EmailAgent implements BaseAgent {
         }
 
         if (!email) {
-          throw new Error(`Candidate email not found for ${cand.name}.`);
+          logs.push(`Candidate email not found for ${cand.name}. Skipping.`);
+          continue;
         }
         
         if (!emailRegex.test(email)) {
-          throw new Error(`Invalid candidate email format: ${email}`);
+          logs.push(`Invalid candidate email format for ${cand.name}: ${email}. Skipping.`);
+          continue;
         }
 
         logs.push(`Generating draft invitation for ${cand.name} (${email})`);
