@@ -27,18 +27,48 @@ export class CalendarAgent implements BaseAgent {
       let baseDate = new Date();
       
       const promptLower = input.prompt.toLowerCase();
-      const matchMonthDay = promptLower.match(/(?:on the\s+|on\s+|date\s+)(\d{1,2})/);
-      const matchDirectDay = promptLower.match(/(\d{1,2})(?:th|rd|st|nd)?\s+(?:of\s+)?(?:this\s+)?month/);
       
-      let targetDay = baseDate.getDate() + 1; // Default: tomorrow
-      if (matchMonthDay) {
-        targetDay = parseInt(matchMonthDay[1], 10);
-      } else if (matchDirectDay) {
-        targetDay = parseInt(matchDirectDay[1], 10);
+      // Look for format: "24 july 2026", "24 july", or "july 24"
+      const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+      const monthsShort = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+      
+      let parsedDate: Date | null = null;
+      
+      // Match "24 july 2026" or "24th july 2026" or "24 jul 2026"
+      const matchFullDate = promptLower.match(/(\d{1,2})(?:th|rd|st|nd)?\s+(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\s*(\d{4})?/);
+      
+      if (matchFullDate) {
+        const day = parseInt(matchFullDate[1], 10);
+        const monthName = matchFullDate[2];
+        const year = matchFullDate[3] ? parseInt(matchFullDate[3], 10) : baseDate.getFullYear();
+        
+        let monthIdx = months.indexOf(monthName);
+        if (monthIdx === -1) {
+          monthIdx = monthsShort.indexOf(monthName);
+        }
+        
+        if (monthIdx !== -1) {
+          parsedDate = new Date(year, monthIdx, day, 10, 0, 0, 0);
+        }
       }
-
-      baseDate.setDate(targetDay);
-      baseDate.setHours(10, 0, 0, 0);
+      
+      if (!parsedDate) {
+        // Fallback to match relative/numeric days: "on the 23rd", "23 of this month"
+        const matchMonthDay = promptLower.match(/(?:on the\s+|on\s+|date\s+)(\d{1,2})/);
+        const matchDirectDay = promptLower.match(/(\d{1,2})(?:th|rd|st|nd)?\s+(?:of\s+)?(?:this\s+)?month/);
+        
+        let targetDay = baseDate.getDate() + 1; // Default: tomorrow
+        if (matchMonthDay) {
+          targetDay = parseInt(matchMonthDay[1], 10);
+        } else if (matchDirectDay) {
+          targetDay = parseInt(matchDirectDay[1], 10);
+        }
+        
+        baseDate.setDate(targetDay);
+        baseDate.setHours(10, 0, 0, 0);
+      } else {
+        baseDate = parsedDate;
+      }
 
       for (const cand of candidates) {
         const dateString = baseDate.toISOString();
