@@ -9,7 +9,11 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 let prismaInstance: PrismaClient;
 
 if (connectionString) {
-  const pool = new Pool({ connectionString });
+  const pool = new Pool({ 
+    connectionString,
+    max: 2, // Limit concurrent pool connections to prevent exhausting Supabase connections
+    idleTimeoutMillis: 10000,
+  });
   const adapter = new PrismaPg(pool);
   prismaInstance = new PrismaClient({ adapter, log: ["query"] });
 } else {
