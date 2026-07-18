@@ -1,0 +1,27 @@
+name: Bug report
+description: Create a report to help us improve AgentOS
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Please fill in the details below.
+  - type: textarea
+    id: describe
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Explain how we can reproduce the behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Vercel / Action Logs
+      description: Attach output logs or inspect metrics.

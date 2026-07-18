@@ -1,0 +1,11 @@
+name: Feature request
+description: Suggest an idea or new agent workflow addition for AgentOS
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed Solution
+      description: Describe the enhancement you would like to see.
+    validations:
+      required: true
