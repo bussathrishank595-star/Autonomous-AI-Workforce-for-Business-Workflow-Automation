@@ -113,6 +113,11 @@ export async function POST(request: Request) {
             where: { id: workflow.id },
             data: { status: "AWAITING_APPROVAL" },
           });
+        } else {
+          await prisma.workflow.update({
+            where: { id: workflow.id },
+            data: { status: "COMPLETED" },
+          });
         }
 
       } catch (e: any) {

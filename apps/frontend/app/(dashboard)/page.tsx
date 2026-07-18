@@ -14,10 +14,27 @@ export default function DashboardPage() {
   const [pendingActions, setPendingActions] = useState<any[]>([]);
   const [authRequired, setAuthRequired] = useState(false);
 
+  // Fetch latest active mission on mount so it survives navigation
+  useEffect(() => {
+    const fetchLatest = async () => {
+      try {
+        const res = await fetch("/api/missions/list");
+        if (res.ok) {
+          const data = await res.json();
+          const latest = data.missions?.[0];
+          if (latest && (latest.status === "PLANNING" || latest.status === "RUNNING" || latest.status === "AWAITING_APPROVAL")) {
+            setActiveMission(latest);
+          }
+        }
+      } catch {}
+    };
+    fetchLatest();
+  }, []);
+
   // Poll for active mission updates (logs, status, actions)
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (activeMission) {
+    if (activeMission?.id) {
       const fetchStatus = async () => {
         try {
           const res = await fetch(`/api/missions?id=${activeMission.id}`);
@@ -34,7 +51,7 @@ export default function DashboardPage() {
       interval = setInterval(fetchStatus, 3000);
     }
     return () => clearInterval(interval);
-  }, [activeMission]);
+  }, [activeMission?.id]);
 
   // Handle workflow trigger
   const handleExecute = async (e: React.FormEvent) => {
