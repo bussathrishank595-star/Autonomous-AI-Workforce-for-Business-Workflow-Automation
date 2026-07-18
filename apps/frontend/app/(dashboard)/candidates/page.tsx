@@ -36,21 +36,21 @@ export default function CandidatesPage() {
     }
   };
 
-  // Search & Filter & Sort candidates
   const processedCandidates = candidates
     .filter(c => {
+      const skillsStr = c.skills || "";
       const matchQuery =
         c.name.toLowerCase().includes(search.toLowerCase()) ||
         (c.email && c.email.toLowerCase().includes(search.toLowerCase())) ||
-        (c.skills && c.skills.toLowerCase().includes(search.toLowerCase()));
+        skillsStr.toLowerCase().includes(search.toLowerCase());
       
       if (statusFilter === "ALL") return matchQuery;
       return matchQuery && c.status === statusFilter;
     })
     .sort((a, b) => {
-      if (sortBy === "SCORE_DESC") return b.matchScore - a.matchScore;
-      if (sortBy === "SCORE_ASC") return a.matchScore - b.matchScore;
-      if (sortBy === "NAME_ASC") return a.name.localeCompare(b.name);
+      if (sortBy === "SCORE_DESC") return (b.matchScore || 0) - (a.matchScore || 0);
+      if (sortBy === "SCORE_ASC") return (a.matchScore || 0) - (b.matchScore || 0);
+      if (sortBy === "NAME_ASC") return (a.name || "").localeCompare(b.name || "");
       return 0;
     });
 
@@ -132,16 +132,26 @@ export default function CandidatesPage() {
                     </td>
                     <td className="px-6 py-4 max-w-xs truncate">
                       <div className="text-xs text-neutral-600 dark:text-neutral-350 truncate">
-                        {Array.isArray(JSON.parse(cand.skills || "[]"))
-                          ? JSON.parse(cand.skills).join(", ")
-                          : cand.skills}
+                        {(() => {
+                          try {
+                            const parsed = JSON.parse(cand.skills || "[]");
+                            return Array.isArray(parsed) ? parsed.join(", ") : parsed;
+                          } catch {
+                            return cand.skills || "None";
+                          }
+                        })()}
                       </div>
                     </td>
                     <td className="px-6 py-4 max-w-xs truncate">
                       <div className="text-xs text-neutral-600 dark:text-neutral-350 truncate">
-                        {Array.isArray(JSON.parse(cand.experience || "[]"))
-                          ? JSON.parse(cand.experience).join("; ")
-                          : cand.experience}
+                        {(() => {
+                          try {
+                            const parsed = JSON.parse(cand.experience || "[]");
+                            return Array.isArray(parsed) ? parsed.join("; ") : parsed;
+                          } catch {
+                            return cand.experience || "None";
+                          }
+                        })()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

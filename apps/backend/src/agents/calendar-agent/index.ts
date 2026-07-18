@@ -34,8 +34,8 @@ export class CalendarAgent implements BaseAgent {
       
       let parsedDate: Date | null = null;
       
-      // Match "24 july 2026" or "24th july 2026" or "24 jul 2026"
-      const matchFullDate = promptLower.match(/(\d{1,2})(?:th|rd|st|nd)?\s+(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\s*(\d{4})?/);
+      // Matches: "24 july 2026", "24th july 2026", "24 july", "24th of july", etc.
+      const matchFullDate = promptLower.match(/(\d{1,2})(?:th|rd|st|nd)?\s+(?:of\s+)?(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\s*(\d{4})?/);
       
       if (matchFullDate) {
         const day = parseInt(matchFullDate[1], 10);
@@ -48,6 +48,7 @@ export class CalendarAgent implements BaseAgent {
         }
         
         if (monthIdx !== -1) {
+          // Keep local hour at 10 AM, but use current timezone instead of UTC shift
           parsedDate = new Date(year, monthIdx, day, 10, 0, 0, 0);
         }
       }

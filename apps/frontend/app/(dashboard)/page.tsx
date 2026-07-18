@@ -168,7 +168,11 @@ export default function DashboardPage() {
             </div>
 
             {pendingActions.length === 0 ? (
-              <p className="text-xs text-neutral-500 py-3 text-center">No staging actions requiring approval.</p>
+              <p className="text-xs text-neutral-500 py-3 text-center">
+                {activeMission && (activeMission.status === "COMPLETED" || logs.some(l => l.includes("Found 0 matching candidates") || l.includes("No candidates")))
+                  ? "No matching applicants found to schedule."
+                  : "No staging actions requiring approval."}
+              </p>
             ) : (
               <div className="space-y-4">
                 {authRequired && (
