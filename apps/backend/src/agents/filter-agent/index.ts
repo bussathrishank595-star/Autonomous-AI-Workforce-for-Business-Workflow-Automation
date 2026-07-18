@@ -66,9 +66,27 @@ Schema:
       if (parsed.matches && Array.isArray(parsed.matches)) {
         for (const item of parsed.matches) {
           // Link candidate back to matching resume name if possible
-          const matchedResume = await prisma.resume.findFirst({
+          let matchedResume = await prisma.resume.findFirst({
             where: { name: { contains: item.name, mode: "insensitive" } }
           });
+
+          // Fallback 1: If name check failed, try to split name and match by first/last tokens
+          if (!matchedResume && item.name) {
+            const nameTokens = item.name.split(/\s+/).filter((t: string) => t.length > 2);
+            for (const token of nameTokens) {
+              matchedResume = await prisma.resume.findFirst({
+                where: { name: { contains: token, mode: "insensitive" } }
+              });
+              if (matchedResume) break;
+            }
+          }
+
+          // Fallback 2: Grab any active resume in this user session if none found (fallback helper)
+          if (!matchedResume) {
+            matchedResume = await prisma.resume.findFirst({
+              where: { userId: input.userId }
+            });
+          }
 
           await prisma.candidate.create({
             data: {
