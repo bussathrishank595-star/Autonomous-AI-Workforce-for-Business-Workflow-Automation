@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/badge/Database-Supabase%20Postgres-green" alt="Supabase"/>
   <img src="https://img.shields.io/badge/ORM-Prisma-lightblue" alt="Prisma"/>
   <img src="https://img.shields.io/badge/Vector-pgvector-orange" alt="pgvector"/>
-  <img src="https://img.shields.io/badge/Embeddings-Voyage%20AI-purple" alt="Voyage AI"/>
+  <img src="https://img.shields.io/badge/Embeddings-Cohere-purple" alt="Cohere"/>
   <img src="https://img.shields.io/badge/LLM-Groq%20Llama%203-red" alt="Groq"/>
   <img src="https://img.shields.io/badge/Auth-NextAuth.js-darkgreen" alt="NextAuth.js"/>
   <img src="https://img.shields.io/badge/Integrations-Google%20APIs-yellow" alt="Google APIs"/>
@@ -59,7 +59,7 @@
 | Process Phase | Manual Recruitment | Existing AI Chatbots | AgentOS Autonomous Workflow |
 | :--- | :--- | :--- | :--- |
 | **Ingestion** | Open resume files one by one | Parse text pasted in chat limits | Automatic chunking & `pgvector` indexing |
-| **Filtering** | Keyword scan by recruiters | Suggest candidate profiles only | Semantic context search via Voyage AI |
+| **Filtering** | Keyword scan by recruiters | Suggest candidate profiles only | Semantic context search via Cohere |
 | **Ranking** | Guess fit based on experience | Draft screening questions | Unified scoring (0-100) on Prisma |
 | **Outreach** | Draft & email each applicant | Write template text to copy | Stages emails inside human approval box |
 | **Calendars** | Coordinate times manually | Recommend scheduling steps | Generates calendar slot invites & Meet links |
@@ -68,7 +68,7 @@
 
 ## ⚡ Key Features
 *   📄 **Resume Parsing**: Decodes text formats and validates duplicate files via SHA-256 hashing.
-*   🧠 **RAG Knowledge Base**: Uses pgvector & Voyage AI `voyage-3` to index document chunks securely.
+*   🧠 **RAG Knowledge Base**: Uses pgvector & Cohere `embed-english-v3.0` to index document chunks securely.
 *   🤖 **Multi-Agent AI**: Mission Planner, Knowledge, Ingestion, Filter, Ranking, Email, Calendar, and Report agents.
 *   🔒 **Human Approval Layer**: Stages generated outreaches so no emails/invitations are sent without confirmation.
 *   📈 **Explainable Logs**: Every execution records its cognitive steps in real-time logs on the dashboard.
@@ -108,19 +108,19 @@ sequenceDiagram
     autonumber
     actor User
     participant Ingest as Ingestion Agent
-    participant Voyage as Voyage AI
+    participant EmbedProvider as Cohere
     participant DB as pgvector DB
     participant Knowledge as Knowledge Agent
     participant LLM as Llama-3 (Groq)
 
     User->>Ingest: Uploads Resume Document
     Ingest->>Ingest: Check SHA-256 Hash Duplicate
-    Ingest->>Voyage: Convert chunks to 1024-float vector
-    Voyage-->>Ingest: Return embeddings
+    Ingest->>EmbedProvider: Convert chunks to 1024-float vector
+    EmbedProvider-->>Ingest: Return embeddings
     Ingest->>DB: Save chunks and vectors
     User->>Knowledge: Execute Semantic Search
-    Knowledge->>Voyage: Embed query
-    Voyage-->>Knowledge: Query Vector
+    Knowledge->>EmbedProvider: Embed query
+    EmbedProvider-->>Knowledge: Query Vector
     Knowledge->>DB: Cosine Similarity match (<=>)
     DB-->>Knowledge: Relevant Context Chunks
     Knowledge->>LLM: Synthesize merged segments
@@ -179,7 +179,7 @@ AgentOS/
 | **Backend** | Next.js Server Actions & Endpoint Routers |
 | **Database** | Supabase (PostgreSQL) |
 | **Vector Engine** | `pgvector` |
-| **Embeddings** | Voyage AI (`voyage-3`) |
+| **Embeddings** | Cohere (`embed-english-v3.0`) |
 | **AI LLM** | Groq (`llama-3.3-70b-versatile`) |
 | **ORM** | Prisma v7 |
 | **API Connectors** | Google Gmail API, Google Calendar API |
@@ -216,7 +216,7 @@ Create a `.env` file in the project root:
 | :--- | :--- | :--- |
 | `DATABASE_URL` | Supabase Postgres Pooler connection URI | Yes |
 | `GROQ_API_KEY` | Groq cloud credential API key | Yes |
-| `VOYAGE_API_KEY` | Voyage AI vector embedding extraction key | Yes |
+| `COHERE_API_KEY` | Cohere vector embedding extraction key | Yes |
 | `NEXTAUTH_SECRET` | Secret key used to sign NextAuth session JWT tokens | Yes |
 | `NEXTAUTH_URL` | Base application location URL | Yes |
 | `GOOGLE_CLIENT_ID` | OAuth API Client ID credential | Yes |

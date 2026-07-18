@@ -5,7 +5,7 @@ This document describes the design principles and system components of **AgentOS
 ## Component Interactions
 
 ### 1. Document Ingestion Pipeline
-When a user uploads resume documents, the `IngestionAgent` parses the files, segments the plain text semantically into sentences/paragraphs (max 800 characters), and requests 1024-dimensional float arrays from Voyage AI (`voyage-3`). The chunks are written to PostgreSQL using Prisma raw SQL injections matching the target `vector` type.
+When a user uploads resume documents, the `IngestionAgent` parses the files, segments the plain text semantically into sentences/paragraphs (max 800 characters), and requests 1024-dimensional float arrays from Cohere (`embed-english-v3.0`). The chunks are written to PostgreSQL using Prisma raw SQL injections matching the target `vector` type.
 
 ### 2. Centralized Knowledge Agent (RAG Gatekeeper)
 No AI workforce agent has direct select/read access to the `DocumentChunk` table. If an agent (e.g., `FilterAgent`) requires candidate resume information:

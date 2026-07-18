@@ -1,7 +1,7 @@
-import { VoyageEmbeddingProvider } from "./voyage";
+import { CohereEmbeddingProvider } from "./cohere";
 import { EmbeddingProvider } from "./index";
 
-let activeProvider: EmbeddingProvider = new VoyageEmbeddingProvider();
+let activeProvider: EmbeddingProvider = new CohereEmbeddingProvider();
 
 export function getEmbeddingProvider(): EmbeddingProvider {
   return activeProvider;

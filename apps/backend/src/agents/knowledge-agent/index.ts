@@ -13,9 +13,9 @@ export class KnowledgeAgent implements BaseAgent {
         throw new Error("No query provided for similarity retrieval.");
       }
 
-      logs.push(`Generating query embedding using Voyage AI provider: "${query}"`);
+      logs.push(`Generating query embedding using Cohere API: "${query}"`);
       const embeddingProvider = getEmbeddingProvider();
-      const queryEmbedding = await embeddingProvider.getEmbedding(query);
+      const queryEmbedding = await embeddingProvider.getEmbedding(query, "search_query");
 
       const topK = input.topK || 8;
       logs.push(`Executing similarity search against pgvector index (topK = ${topK})...`);

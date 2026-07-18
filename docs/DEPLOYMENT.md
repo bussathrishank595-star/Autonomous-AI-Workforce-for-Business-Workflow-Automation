@@ -14,7 +14,7 @@ This document describes how to deploy AgentOS to Vercel and connect Supabase dat
 2. Configure the required environment variables:
    - `DATABASE_URL` (Supabase Connection Pooler URI)
    - `GROQ_API_KEY` (Llama-3 API Key)
-   - `VOYAGE_API_KEY` (Voyage AI API Key)
+   - `COHERE_API_KEY` (Cohere Embed API Key)
    - `NEXTAUTH_SECRET` (JWT session encoder secret)
    - `NEXTAUTH_URL` (Deployment URL)
    - `GOOGLE_CLIENT_ID` (Google OAuth Client ID)

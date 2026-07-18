@@ -71,8 +71,8 @@ export class DocumentIngestionAgent implements BaseAgent {
         }));
 
         // Batch generate embeddings
-        logs.push("Requesting embeddings batch from Voyage AI provider...");
-        const embeddings = await embeddingProvider.getEmbeddingsBatch(chunksText);
+        logs.push("Requesting embeddings batch from Cohere API...");
+        const embeddings = await embeddingProvider.getEmbeddingsBatch(chunksText, "search_document");
 
         // Save chunks and vector embeddings using pgvector raw client
         logs.push("Storing chunk records inside pgvector index...");
