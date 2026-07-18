@@ -22,9 +22,20 @@ export class EmailAgent implements BaseAgent {
       }
 
       logs.push(`Generating custom interview invitation templates for ${candidates.length} candidates...`);
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       for (const cand of candidates) {
-        const email = cand.email || "placeholder@example.com";
+        const email = (cand.email || "").trim();
+        
+        if (!email) {
+          throw new Error("Candidate email not found.");
+        }
+        
+        if (!emailRegex.test(email)) {
+          throw new Error(`Invalid candidate email format: ${email}`);
+        }
+
         logs.push(`Generating draft invitation for ${cand.name} (${email})`);
 
         const systemPrompt = `You are a recruitment outreach assistant writing invitations.
@@ -70,12 +81,24 @@ Candidate Reasoning: ${cand.reasoning}`;
       const action = await prisma.emailHistory.findUnique({ where: { id: actionId } });
       if (!action) throw new Error("Action not found.");
 
+      const recipientEmail = (action.candidateEmail || "").trim();
+      if (!recipientEmail) {
+        throw new Error("Candidate email not found.");
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(recipientEmail)) {
+        throw new Error(`Invalid candidate email format: ${recipientEmail}`);
+      }
+
+      console.log(`[Gmail API Outreach] Dispatching interview invite email to candidate: ${recipientEmail}`);
+
       const auth = getAuthenticatedClient(googleTokenJson);
       const gmail = getGmailClient(auth);
 
       const utf8Subject = `=?utf-8?B?${Buffer.from(action.subject || "").toString("base64")}?=`;
       const messageParts = [
-        `To: ${action.candidateEmail}`,
+        `To: ${recipientEmail}`,
         "Content-Type: text/plain; charset=utf-8",
         "MIME-Version: 1.0",
         `Subject: ${utf8Subject}`,
