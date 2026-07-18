@@ -11,8 +11,8 @@ let prismaInstance: PrismaClient;
 if (connectionString) {
   const pool = new Pool({ 
     connectionString,
-    max: 2, // Throttling pool sizes down to 2 client allocations per container
-    idleTimeoutMillis: 10000,
+    max: 1, // Restrict each serverless worker container to at most 1 connection
+    idleTimeoutMillis: 2000, // Speed up release of idle connection sockets
   });
   const adapter = new PrismaPg(pool);
   prismaInstance = new PrismaClient({ adapter, log: ["query"] });
