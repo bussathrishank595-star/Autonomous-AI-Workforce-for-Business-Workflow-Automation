@@ -14,6 +14,9 @@ export class EmailAgent implements BaseAgent {
           workflowId: input.workflowId as string,
           status: "SHORTLISTED",
         },
+        include: {
+          resume: true, // Join resume to get email fallback
+        },
       });
 
       if (candidates.length === 0) {
@@ -26,10 +29,25 @@ export class EmailAgent implements BaseAgent {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       for (const cand of candidates) {
-        const email = (cand.email || "").trim();
+        // Try candidate email first, then resume email, then parse from resume text
+        let email = (cand.email || "").trim();
         
+        if (!email && cand.resume?.email) {
+          email = cand.resume.email.trim();
+          logs.push(`Using resume email for ${cand.name}: ${email}`);
+        }
+
+        // Last resort: scan resume parsedText for email pattern
+        if (!email && cand.resume?.parsedText) {
+          const emailMatch = cand.resume.parsedText.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+          if (emailMatch) {
+            email = emailMatch[1].trim();
+            logs.push(`Extracted email from resume text for ${cand.name}: ${email}`);
+          }
+        }
+
         if (!email) {
-          throw new Error("Candidate email not found.");
+          throw new Error(`Candidate email not found for ${cand.name}.`);
         }
         
         if (!emailRegex.test(email)) {
