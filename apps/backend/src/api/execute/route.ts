@@ -10,6 +10,8 @@ import { EmailAgent } from "@/agents/email-agent";
 import { CalendarAgent } from "@/agents/calendar-agent";
 import { ReportAgent } from "@/agents/report-agent";
 
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
