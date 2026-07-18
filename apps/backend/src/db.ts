@@ -11,7 +11,7 @@ let prismaInstance: PrismaClient;
 if (connectionString) {
   const pool = new Pool({ 
     connectionString,
-    max: 2, // Limit concurrent pool connections to prevent exhausting Supabase connections
+    max: 2, // Throttling pool sizes down to 2 client allocations per container
     idleTimeoutMillis: 10000,
   });
   const adapter = new PrismaPg(pool);
