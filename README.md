@@ -1,91 +1,107 @@
-# AgentOS – Autonomous AI Workforce for Business Workflow Automation
+<p align="center">
+  <img src="assets/screenshots/dashboard.png" alt="AgentOS Logo" width="120px" style="border-radius: 50%"/>
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Framework: Next.js](https://img.shields.io/badge/Framework-Next.js-blue.svg)](https://nextjs.org/)
-[![Database: Supabase](https://img.shields.io/badge/Database-Supabase-green.svg)](https://supabase.com/)
-[![Vector: pgvector](https://img.shields.io/badge/Vector-pgvector-orange.svg)](https://github.com/pgvector/pgvector)
-[![Embeddings: Voyage AI](https://img.shields.io/badge/Embeddings-Voyage%20AI-purple.svg)](https://www.voyageai.com/)
-[![LLM: Groq Llama-3](https://img.shields.io/badge/LLM-Groq%20Llama--3-red.svg)](https://groq.com/)
+<h1 align="center">🚀 AgentOS</h1>
 
-**AgentOS** is an enterprise-grade autonomous AI workforce orchestrator designed to transform natural language goal directives into structured, executable business workflows. By leveraging Retrieval-Augmented Generation (RAG), a specialized Mission Planner, and a network of cooperative AI agents, AgentOS automates end-to-end recruitment pipelines—from document ingestion to Gmail outreach, Google Calendar event scheduling, and final report compilation.
+<p align="center">
+  <strong>Autonomous AI Workforce for Business Workflow Automation</strong>
+</p>
+
+<p align="center">
+  <em>"Transform natural language directives into autonomous business workflows using RAG pipelines and cooperative AI Agents."</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Framework-Next.js%2014-blue" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Language-TypeScript-blue" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Database-Supabase%20Postgres-green" alt="Supabase"/>
+  <img src="https://img.shields.io/badge/ORM-Prisma-lightblue" alt="Prisma"/>
+  <img src="https://img.shields.io/badge/Vector-pgvector-orange" alt="pgvector"/>
+  <img src="https://img.shields.io/badge/Embeddings-Voyage%20AI-purple" alt="Voyage AI"/>
+  <img src="https://img.shields.io/badge/LLM-Groq%20Llama%203-red" alt="Groq"/>
+  <img src="https://img.shields.io/badge/Auth-NextAuth.js-darkgreen" alt="NextAuth.js"/>
+  <img src="https://img.shields.io/badge/Integrations-Google%20APIs-yellow" alt="Google APIs"/>
+  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="MIT License"/>
+</p>
 
 ---
 
 ## 📖 Table of Contents
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [System Architecture](#-system-architecture)
-- [RAG Pipeline](#-rag-pipeline)
-- [Multi-Agent Workforce](#-multi-agent-workforce)
-- [Workflow Example](#-workflow-example)
-- [Tech Stack](#-tech-stack)
-- [Folder Structure](#-folder-structure)
-- [Installation](#-installation)
-- [Environment Variables](#-environment-variables)
-- [Usage Guide](#-usage-guide)
-- [Security Model](#-security-model)
-- [Performance & Optimization](#-performance--optimization)
-- [Roadmap](#-roadmap)
-- [Contributing](#-contributing)
-- [License](#-license)
+*   [Overview](#-overview)
+*   [Manual vs AgentOS](#-manual-vs-agentos)
+*   [Key Features](#-key-features)
+*   [System Architecture](#-system-architecture)
+*   [RAG Pipeline Architecture](#-rag-pipeline-architecture)
+*   [Workflow Execution Timeline](#-workflow-execution-timeline)
+*   [Application Interface (Screenshots)](#-application-interface-screenshots)
+*   [Project Structure](#-project-structure)
+*   [Tech Stack](#-tech-stack)
+*   [Installation & Setup](#-installation--setup)
+*   [Environment Variables](#-environment-variables)
+*   [Example Prompt Directives](#-example-prompt-directives)
+*   [Roadmap](#-roadmap)
+*   [Contributing](#-contributing)
+*   [License](#-license)
+*   [Authors](#-authors)
 
 ---
 
 ## 🌟 Overview
+*   **The Problem**: Traditional AI models are simple chat assistants. They answer questions but cannot coordinate or execute workflows across external services (email, calendars, DBs).
+*   **The Solution**: AgentOS deploys an orchestrator that plans candidate searches, reads from document chunks, ranks matches, schedules calendars, and dispatches templates.
+*   **The Impact**: Transforms multi-hour operations into a single natural language directive, backed by human-in-the-loop approvals.
 
-### The Business Challenge
-Traditional conversational AI systems are *passive responders*. They produce recommendations, drafts, or analysis, but cannot take actions. Resolving complex business workflows—like candidate selection, screening, email invitation, calendar coordination, and generating feedback reports—still requires human teams to copy-paste context between multiple disconnected applications.
+---
 
-### The AgentOS Solution
-AgentOS bridges the gap between reasoning and action by deploying an **Autonomous Multi-Agent Workforce**. Instead of reading entire files directly, the system uses a **Retrieval-Augmented Generation (RAG)** pipeline backed by `pgvector` and Voyage AI. Agents only pull relevant candidate chunks through a centralized Knowledge Agent, creating a secure, highly scalable sandbox where goal-directed tasks are planned, approved, and executed.
+## 📊 Manual vs AgentOS
+
+| Process Phase | Manual Recruitment | Existing AI Chatbots | AgentOS Autonomous Workflow |
+| :--- | :--- | :--- | :--- |
+| **Ingestion** | Open resume files one by one | Parse text pasted in chat limits | Automatic chunking & `pgvector` indexing |
+| **Filtering** | Keyword scan by recruiters | Suggest candidate profiles only | Semantic context search via Voyage AI |
+| **Ranking** | Guess fit based on experience | Draft screening questions | Unified scoring (0-100) on Prisma |
+| **Outreach** | Draft & email each applicant | Write template text to copy | Stages emails inside human approval box |
+| **Calendars** | Coordinate times manually | Recommend scheduling steps | Generates calendar slot invites & Meet links |
 
 ---
 
 ## ⚡ Key Features
-
-| Feature | Description |
-| :--- | :--- |
-| **Multi-Agent Architecture** | Interoperative agents executing specialized steps (Ingestion, Search, Filter, Rank, Email, Calendar, Report). |
-| **RAG Knowledge Base** | Powered by Supabase PostgreSQL and `pgvector` for scalable, semantic-based chunk searches. |
-| **Duplicate File Hashing** | SHA-256 duplicate validation logic to skip redundant embedding calculations. |
-| **Modular Provider Model** | Pluggable interface bindings allowing hot-swappable LLM (Groq) and Embedding (Voyage) providers. |
-| **Human-In-The-Loop Approval** | Email and Meeting drafts are staged as pending actions; never dispatched without explicit user confirmation. |
-| **Semantic Matching** | Matches context intelligently (e.g. *React Developer* matches *Frontend Engineer*). |
-| **Explainable AI Logging** | Every agent records its cognitive execution timeline to a unified dashboard console log. |
+*   📄 **Resume Parsing**: Decodes text formats and validates duplicate files via SHA-256 hashing.
+*   🧠 **RAG Knowledge Base**: Uses pgvector & Voyage AI `voyage-3` to index document chunks securely.
+*   🤖 **Multi-Agent AI**: Mission Planner, Knowledge, Ingestion, Filter, Ranking, Email, Calendar, and Report agents.
+*   🔒 **Human Approval Layer**: Stages generated outreaches so no emails/invitations are sent without confirmation.
+*   📈 **Explainable Logs**: Every execution records its cognitive steps in real-time logs on the dashboard.
 
 ---
 
 ## 📐 System Architecture
 
-The following flowchart outlines how user goal directives cascade through the planner, database, and specialized agents:
-
 ```mermaid
 graph TD
-    User([User Directive]) -->|Submits Goal| MP[Mission Planner Agent]
-    MP -->|Generates Task Sequence| WEE[Workflow Execution Engine]
-    WEE -->|Executes Tasks| IA[Ingestion Agent]
-    WEE -->|Executes Tasks| FA[Filter Agent]
-    WEE -->|Executes Tasks| RA[Ranking Agent]
-    WEE -->|Executes Tasks| EA[Email Agent]
-    WEE -->|Executes Tasks| CA[Calendar Agent]
-    WEE -->|Executes Tasks| RepA[Report Agent]
+    User([User Directive]) -->|Submit Goal| MP[Mission Planner Agent]
+    MP -->|Generate Tasks| WEE[Workflow Execution Engine]
+    WEE -->|Run Subtask| IA[Ingestion Agent]
+    WEE -->|Run Subtask| FA[Filter Agent]
+    WEE -->|Run Subtask| RA[Ranking Agent]
+    WEE -->|Run Subtask| EA[Email Agent]
+    WEE -->|Run Subtask| CA[Calendar Agent]
+    WEE -->|Run Subtask| RepA[Report Agent]
     
-    FA -->|Query Context| KA[Knowledge Agent]
-    KA -->|Query Embeddings| VDB[(pgvector DB)]
+    FA -->|Query context| KA[Knowledge Agent]
+    KA -->|Cosine Search| pg[(pgvector Database)]
     
-    EA -->|Stages Outbox| Hil[Human-in-the-Loop Approval]
-    CA -->|Stages Invites| Hil
+    EA -->|Create draft| Approval{HITL Approval Box}
+    CA -->|Create draft| Approval
     
-    Hil -->|Approved| Gmail[Gmail API]
-    Hil -->|Approved| Calendar[Google Calendar API]
-    RepA -->|Compiles| Out([Printable Report & Metrics])
+    Approval -->|Approved| Gmail[Gmail API]
+    Approval -->|Approved| Cal[Google Calendar API]
+    RepA -->|Generate Report| Output([Final HTML Report])
 ```
 
 ---
 
-## 🔍 RAG Pipeline
-
-AgentOS operates on a secure, query-driven RAG execution architecture:
+## 🔍 RAG Pipeline Architecture
 
 ```mermaid
 sequenceDiagram
@@ -93,129 +109,135 @@ sequenceDiagram
     actor User
     participant Ingest as Ingestion Agent
     participant Voyage as Voyage AI
-    participant DB as Supabase pgvector
+    participant DB as pgvector DB
     participant Knowledge as Knowledge Agent
     participant LLM as Llama-3 (Groq)
 
     User->>Ingest: Uploads Resume Document
-    Ingest->>Ingest: Extract text & SHA-256 Hash check
-    Ingest->>Voyage: Request embeddings for chunks (voyage-3)
-    Voyage-->>Ingest: Return 1024-dimension float array
-    Ingest->>DB: Store chunks & vector embeddings
-    User->>Knowledge: Execute search query
-    Knowledge->>Voyage: Convert search query to embedding
-    Voyage-->>Knowledge: Return query vector
-    Knowledge->>DB: Search top-K similarity chunks (<=> Cosine Distance)
-    DB-->>Knowledge: Return relevant chunks context
-    Knowledge->>LLM: Pass merged context for semantic ranking/outreach
-    LLM-->>User: Return structured JSON match recommendations
+    Ingest->>Ingest: Check SHA-256 Hash Duplicate
+    Ingest->>Voyage: Convert chunks to 1024-float vector
+    Voyage-->>Ingest: Return embeddings
+    Ingest->>DB: Save chunks and vectors
+    User->>Knowledge: Execute Semantic Search
+    Knowledge->>Voyage: Embed query
+    Voyage-->>Knowledge: Query Vector
+    Knowledge->>DB: Cosine Similarity match (<=>)
+    DB-->>Knowledge: Relevant Context Chunks
+    Knowledge->>LLM: Synthesize merged segments
+    LLM-->>User: Screened recommendation JSON
 ```
 
 ---
 
-## 🤖 Multi-Agent Workforce
+## 🏁 Workflow Execution Timeline
+```
+[Upload Resume] ➔ [Index Chunks] ➔ [Submit Prompt] ➔ [Plan Stages] ➔ [Score Matches] ➔ [Review Outreach] ➔ [Book Meet]
+```
 
-AgentOS splits execution responsibilities across specialized cooperative agents:
+---
 
-*   **Mission Planner**: The mastermind agent. Translates natural language directives into structured JSON tasks and execution plans.
-*   **Knowledge Agent**: The sole gatekeeper of the Vector Database. Generates query embeddings and performs similarity searches.
-*   **Ingestion Agent**: Manages text parsing (PDF, DOCX, TXT), paragraph segmentation, and uploads chunk embeddings to `pgvector`.
-*   **Filter Agent**: Synthesizes RAG chunks to screen candidates matching requirements.
-*   **Ranking Agent**: Grades filtered resumes (0-100) using multi-factor parameters (skills, education, relevance).
-*   **Email Agent**: Stages outreach templates in the database and dispatches live Gmail messages upon approval.
-*   **Calendar Agent**: Sets up Google Calendar invites and Meet URLs for shortlisted candidates.
-*   **Report Agent**: Automatically compiles a structured breakdown of selected/rejected candidates into a printable HTML report.
+## 📱 Application Interface (Screenshots)
+
+### Dashboard Control Panel
+![Dashboard Interface](assets/screenshots/dashboard.png)
+*Recruitment orchestrator directive prompt input and pending task approval box.*
+
+### Resume Repository Uploads
+![Resume Upload Page](assets/screenshots/uploads.png)
+*Resume drag-and-drop ingestion page showing indexed parsing statuses.*
+
+### Execution Planner History
+![Workflow Execution History](assets/screenshots/tasks.png)
+*Mission Planner strategic task breakdowns showing completed workflow runs.*
+
+### Multi-Agent Actions Executing
+![Workflow Timeline Action Stage](assets/screenshots/timeline.png)
+*Live AI Workforce console logs showing email outreaches staged for review.*
+
+---
+
+## 📂 Project Structure
+
+```
+AgentOS/
+├── apps/
+│   ├── frontend/         # React components, styles, Next.js page views
+│   └── backend/          # REST route handlers, AI Agents, database clients
+├── database/
+│   └── prisma/           # Schema configurations & migrations
+├── docs/                 # Systems guides (Architecture, API, RAG Pipeline)
+└── assets/               # Screenshots and UI media captures
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
+| Component | Technology |
 | :--- | :--- |
-| **Frontend** | React 18, Next.js (App Router), Tailwind CSS, Lucide icons |
-| **Backend** | Next.js Server Actions & API Routes |
+| **Frontend** | React 18, Next.js (App Router), Tailwind CSS |
+| **Backend** | Next.js Server Actions & Endpoint Routers |
 | **Database** | Supabase (PostgreSQL) |
-| **Vector Index** | `pgvector` (1024-dimension cosine similarity indexing) |
-| **AI Engine** | Groq (`llama-3.3-70b-versatile`) |
+| **Vector Engine** | `pgvector` |
 | **Embeddings** | Voyage AI (`voyage-3`) |
+| **AI LLM** | Groq (`llama-3.3-70b-versatile`) |
 | **ORM** | Prisma v7 |
-| **Authentication** | NextAuth.js (Credentials Strategy) |
-| **Integrations** | Google Gmail API, Google Calendar API (OAuth2) |
+| **API Connectors** | Google Gmail API, Google Calendar API |
 
 ---
 
-## 📂 Folder Structure
+## ⚡ Installation & Setup
 
-```
-├── prisma/
-│   └── schema.prisma        # Database models & pgvector configurations
-├── src/
-│   ├── agents/              # AI Workforce Agents
-│   │   ├── ingestion-agent/ # Chunking & embedding ingestion
-│   │   ├── knowledge-agent/ # pgvector querying & similarity search
-│   │   ├── filter-agent/    # Semantic matching
-│   │   ├── ranking-agent/   # Multi-factor candidate scoring
-│   │   ├── email-agent/     # Gmail helper
-│   │   ├── calendar-agent/  # Google Calendar coordinator
-│   │   ├── report-agent/    # Summary HTML builder
-│   │   └── index.ts         # Agent interface typings
-│   ├── app/                 # Next.js App Router Pages & API handlers
-│   ├── components/          # Reusable UI widgets
-│   ├── services/            # Client integrations (Voyage, Groq, Google)
-│   └── types/               # TypeScript type definitions
-```
-
----
-
-## ⚡ Installation
-
-### Prerequisites
-- Node.js (v18.x or later)
-- PostgreSQL Database with `pgvector` extension enabled (e.g., Supabase)
-
-### Setup Steps
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/tejosai09-sketch/Autonomous-AI-Workforce-for-Business-Workflow-Automation-.git
-   cd Autonomous-AI-Workforce-for-Business-Workflow-Automation-
+   git clone https://github.com/bussathrishank595-star/Autonomous-AI-Workforce-for-Business-Workflow-Automation.git
+   cd Autonomous-AI-Workforce-for-Business-Workflow-Automation
    ```
-
 2. **Install Dependencies**
    ```bash
    npm install
    ```
-
-3. **Configure Environment Variables**
-   Create a `.env` file in the root directory:
-   ```env
-   DATABASE_URL="postgresql://username:password@host:port/dbname?schema=public"
-   GROQ_API_KEY="your-groq-api-key"
-   VOYAGE_API_KEY="your-voyage-api-key"
-   NEXTAUTH_SECRET="your-jwt-nextauth-secret-key"
-   NEXTAUTH_URL="http://localhost:3000"
-   GOOGLE_CLIENT_ID="your-google-oauth-client-id"
-   GOOGLE_CLIENT_SECRET="your-google-oauth-client-secret"
-   GOOGLE_REDIRECT_URI="http://localhost:3000/api/auth/callback/google"
-   ```
-
-4. **Initialize pgvector & Database Schema**
+3. **Configure Database Schema**
    ```bash
    npx prisma db push
    npx prisma generate
    ```
-
-5. **Start Development Server**
+4. **Launch Local Server**
    ```bash
    npm run dev
    ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🛡️ Security Model
-- **Google OAuth2**: Candidate outreaches are dispatched through your personal connected Google account using offline-access authorization.
-- **Human-In-The-Loop (HITL)**: All calendar meetings and outreach emails remain staged under `PENDING_APPROVAL` status. No message is sent without explicit user confirmation.
-- **Credential Storage**: Access tokens are stored as encrypted JSON payloads inside PostgreSQL.
+## 🔑 Environment Variables
+Create a `.env` file in the project root:
+
+| Key | Purpose | Required |
+| :--- | :--- | :--- |
+| `DATABASE_URL` | Supabase Postgres Pooler connection URI | Yes |
+| `GROQ_API_KEY` | Groq cloud credential API key | Yes |
+| `VOYAGE_API_KEY` | Voyage AI vector embedding extraction key | Yes |
+| `NEXTAUTH_SECRET` | Secret key used to sign NextAuth session JWT tokens | Yes |
+| `NEXTAUTH_URL` | Base application location URL | Yes |
+| `GOOGLE_CLIENT_ID` | OAuth API Client ID credential | Yes |
+| `GOOGLE_CLIENT_SECRET` | OAuth API Secret credential | Yes |
+
+---
+
+## 💡 Example Prompt Directives
+*   `find React developers with 3 years of experience. Shortlist them and send invitations.`
+*   `shortlist candidates with Python skills, schedule interviews, and compile a status report.`
+
+---
+
+## 🗺️ Roadmap
+*   ☑ **pgvector Similarity Search**
+*   ☑ **Automatic Resume parsing**
+*   ☑ **Candidate matching scores**
+*   ☑ **Gmail & Google Calendar integrations**
+*   ☐ **Slack notifications integration**
+*   ☐ **CRM Salesforce integrations**
+*   ☐ **Voice command inputs**
 
 ---
 
