@@ -224,6 +224,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 👥 Author
-- **Tejosai**
-- **GitHub**: [@tejosai09-sketch](https://github.com/tejosai09-sketch)
+## 👥 Authors
+- **Tejosai** - [GitHub](https://github.com/tejosai09-sketch)
+- **Thrishank** - [GitHub](https://github.com/bussathrishank595-star)
