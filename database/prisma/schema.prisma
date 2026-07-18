@@ -36,7 +36,8 @@ model Resume {
   experience   String?         // JSON list of experience
   education    String?         // JSON list of education
   projects     String?         // JSON list of projects
-
+  location     String?         // Address or location
+  
   userId       String
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime        @default(now())

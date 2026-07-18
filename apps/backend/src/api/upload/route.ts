@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import * as pdfParse from "pdf-parse-fork";
 import crypto from "crypto";
+import { extractMetadata, isValidEmail } from "@backend/utils/metadata-extractor";
 
 function parseDocxSimple(buffer: Buffer): string {
   try {
@@ -70,10 +71,11 @@ export async function POST(request: Request) {
         parsedText = "No printable text detected in resume document.";
       }
 
-      // Parse candidate name/email details from raw text to populate standard Resume indexing properties
-      const nameMatch = parsedText.match(/Name:\s*([^\n\r]+)/i) || parsedText.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/);
-      const emailMatch = parsedText.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
-      const phoneMatch = parsedText.match(/(\+?\d{1,3}[-.\s]??\d{3}[-.\s]??\d{3}[-.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-.\s]??\d{4})/);
+      // Parse candidate details using the new robust extractor
+      const metadata = extractMetadata(parsedText);
+
+      // Validate email format before saving. If invalid, store as empty string
+      const finalEmail = isValidEmail(metadata.email) ? metadata.email : "";
 
       const resume = await prisma.resume.create({
         data: {
@@ -82,9 +84,10 @@ export async function POST(request: Request) {
           parsedText,
           hash,
           userId,
-          name: nameMatch ? nameMatch[1].trim() : file.name.replace(/\.[^/.]+$/, ""),
-          email: emailMatch ? emailMatch[1].trim() : "",
-          phone: phoneMatch ? phoneMatch[1].trim() : "",
+          name: metadata.name || file.name.replace(/\.[^/.]+$/, ""),
+          email: finalEmail,
+          phone: metadata.phone,
+          location: metadata.location,
           status: "PENDING",
         },
       });

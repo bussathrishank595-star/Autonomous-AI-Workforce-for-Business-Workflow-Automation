@@ -26,10 +26,10 @@ export class EmailAgent implements BaseAgent {
 
       logs.push(`Generating custom interview invitation templates for ${candidates.length} candidates...`);
       
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const { isValidEmail } = require("../../utils/metadata-extractor");
 
       for (const cand of candidates) {
-        // Try candidate email first, then resume email, then parse from resume text
+        // Try candidate email first, then resume email
         let email = (cand.email || "").trim();
         
         if (!email && cand.resume?.email) {
@@ -37,22 +37,13 @@ export class EmailAgent implements BaseAgent {
           logs.push(`Using resume email for ${cand.name}: ${email}`);
         }
 
-        // Last resort: scan resume parsedText for email pattern
-        if (!email && cand.resume?.parsedText) {
-          const emailMatch = cand.resume.parsedText.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
-          if (emailMatch) {
-            email = emailMatch[1].trim();
-            logs.push(`Extracted email from resume text for ${cand.name}: ${email}`);
-          }
-        }
-
         if (!email) {
           logs.push(`Candidate email not found for ${cand.name}. Skipping.`);
           continue;
         }
         
-        if (!emailRegex.test(email)) {
-          logs.push(`Invalid candidate email format for ${cand.name}: ${email}. Skipping.`);
+        if (!isValidEmail(email)) {
+          logs.push(`Invalid candidate email extracted.`);
           continue;
         }
 
@@ -106,8 +97,8 @@ Candidate Reasoning: ${cand.reasoning}`;
         throw new Error("Candidate email not found.");
       }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(recipientEmail)) {
+      const { isValidEmail } = require("../../utils/metadata-extractor");
+      if (!isValidEmail(recipientEmail)) {
         throw new Error(`Invalid candidate email format: ${recipientEmail}`);
       }
 

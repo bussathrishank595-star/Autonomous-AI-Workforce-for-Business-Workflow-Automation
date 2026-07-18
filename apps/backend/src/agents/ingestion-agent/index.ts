@@ -66,9 +66,12 @@ export class DocumentIngestionAgent implements BaseAgent {
             chunkIndex: idx,
             candidateName: res.name || "Unknown Candidate",
             email: res.email || "",
+            location: res.location || "",
             skills: res.skills || "[]",
           },
         }));
+
+        logs.push(`Extracted Metadata - Name: ${res.name || "Unknown"}, Email: ${res.email || "None"}, Phone: ${res.phone || "None"}, Location: ${res.location || "None"}`);
 
         // Batch generate embeddings
         logs.push("Requesting embeddings batch from Cohere API...");

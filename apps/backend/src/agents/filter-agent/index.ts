@@ -90,11 +90,7 @@ Schema:
 
           // Resolve email and name prioritizing Resume over LLM
           let resolvedEmail = matchedResume?.email?.trim() || (item.email || "").trim();
-          if (!resolvedEmail && matchedResume?.parsedText) {
-            const emailMatch = matchedResume.parsedText.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
-            if (emailMatch) resolvedEmail = emailMatch[1].trim();
-          }
-
+          
           const resolvedName = matchedResume?.name || item.name;
 
           await prisma.candidate.create({
