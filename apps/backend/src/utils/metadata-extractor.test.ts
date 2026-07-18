@@ -41,7 +41,7 @@ describe("Metadata Extractor", () => {
     it("should correctly extract metadata when fields are on separate lines", () => {
       const text = `
 John Doe
-Email: john.doe@example.com
+Email: john.doe@test.com
 Phone: (555) 123-4567
 Location: New York, NY
 Experience: 5 years
@@ -49,7 +49,7 @@ Experience: 5 years
       const metadata = extractMetadata(text);
       
       expect(metadata.name).toBe("John Doe");
-      expect(metadata.email).toBe("john.doe@example.com");
+      expect(metadata.email).toBe("john.doe@test.com");
       expect(metadata.phone).toBe("(555) 123-4567");
       expect(metadata.location).toBe("New York, NY");
     });

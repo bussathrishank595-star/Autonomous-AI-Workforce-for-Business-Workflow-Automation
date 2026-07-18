@@ -73,7 +73,14 @@ export class CalendarAgent implements BaseAgent {
 
       for (const cand of candidates) {
         const dateString = baseDate.toISOString();
-        const email = cand.email || "placeholder@example.com";
+        let email = (cand.email || "").trim();
+        
+        // Follow the same email fallback strategy as EmailAgent
+        // (Assuming you might want to join resume but for CalendarAgent we can just check cand.email)
+        if (!email) {
+          logs.push(`Candidate email not found for ${cand.name}. Skipping.`);
+          continue;
+        }
 
         logs.push(`Planning meeting for ${cand.name} at ${dateString}`);
 

@@ -99,7 +99,7 @@ Candidate Reasoning: ${cand.reasoning}`;
 
       const { isValidEmail } = require("../../utils/metadata-extractor");
       if (!isValidEmail(recipientEmail)) {
-        throw new Error(`Invalid candidate email format: ${recipientEmail}`);
+        throw new Error("Candidate email not found.");
       }
 
       console.log(`[Gmail API Outreach] Dispatching interview invite email to candidate: ${recipientEmail}`);
